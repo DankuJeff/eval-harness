@@ -1,0 +1,8 @@
+deepeval
+anthropic
+wandb
+fastapi
+uvicorn
+python-dotenv
+numpy
+openai

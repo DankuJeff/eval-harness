@@ -1,0 +1,30 @@
+# Secrets
+.env
+
+# Python
+__pycache__/
+.pytest_cache/
+*.pyc
+venv/
+
+# Node
+node_modules/
+dist/
+
+# OS
+.DS_Store
+
+# Experiment tracking
+wandb/
+
+# DeepEval config cache
+.deepeval/
+
+# Internal / workspace files
+CLAUDE.md
+LEARNING.md
+eval-harness-plan.md
+.claude/
+
+# Dead code / duplicates
+logging/

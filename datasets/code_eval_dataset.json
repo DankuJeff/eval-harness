@@ -1,0 +1,450 @@
+[
+  {
+    "id": "bug-001",
+    "task_type": "bug_identification",
+    "input": {
+      "code_snippet": "def find_max(nums):\n    max_val = 0\n    for i in range(len(nums)):\n        if nums[i] > max_val:\n            max_val = nums[i]\n    return max_val",
+      "language": "python",
+      "prompt_version": "v1"
+    },
+    "ground_truth": {
+      "expected_output": "The initial value of max_val is hardcoded to 0, which causes the function to return 0 incorrectly when all elements are negative. It should be initialized to nums[0] or float('-inf').",
+      "notes": "Logic error — wrong default value assumption"
+    },
+    "rag_context": null
+  },
+  {
+    "id": "bug-002",
+    "task_type": "bug_identification",
+    "input": {
+      "code_snippet": "def get_last(items):\n    return items[len(items)]",
+      "language": "python",
+      "prompt_version": "v1"
+    },
+    "ground_truth": {
+      "expected_output": "Off-by-one error: valid indices are 0 to len(items)-1, so items[len(items)] always raises an IndexError. The correct expression is items[len(items) - 1] or items[-1].",
+      "notes": "Classic off-by-one — index equals length"
+    },
+    "rag_context": null
+  },
+  {
+    "id": "bug-003",
+    "task_type": "bug_identification",
+    "input": {
+      "code_snippet": "def is_adult(age):\n    if age < 18:\n        return True\n    return False",
+      "language": "python",
+      "prompt_version": "v1"
+    },
+    "ground_truth": {
+      "expected_output": "The condition is inverted. The function returns True when age is less than 18, which is the opposite of the intended behavior for an is_adult check. The condition should be age >= 18.",
+      "notes": "Logic inversion bug"
+    },
+    "rag_context": null
+  },
+  {
+    "id": "bug-004",
+    "task_type": "bug_identification",
+    "input": {
+      "code_snippet": "def double_value(x):\n    return x + x\n\nresult = double_value('5')\nprint(result + 1)",
+      "language": "python",
+      "prompt_version": "v1"
+    },
+    "ground_truth": {
+      "expected_output": "Type error: double_value('5') returns the string '55' (string concatenation), and then '55' + 1 raises a TypeError because you cannot add a string and an integer. The input should be an integer: double_value(5).",
+      "notes": "Type error caused by passing a string where an int is expected"
+    },
+    "rag_context": null
+  },
+  {
+    "id": "bug-005",
+    "task_type": "bug_identification",
+    "input": {
+      "code_snippet": "function getUser(users, id) {\n  for (let i = 0; i <= users.length; i++) {\n    if (users[i].id === id) {\n      return users[i];\n    }\n  }\n  return null;\n}",
+      "language": "javascript",
+      "prompt_version": "v1"
+    },
+    "ground_truth": {
+      "expected_output": "Off-by-one error: the loop condition uses i <= users.length, which causes the last iteration to access users[users.length], which is undefined. Accessing .id on undefined throws a TypeError. The condition should be i < users.length.",
+      "notes": "Off-by-one in loop bound — JavaScript array access out of bounds"
+    },
+    "rag_context": null
+  },
+  {
+    "id": "bug-006",
+    "task_type": "bug_identification",
+    "input": {
+      "code_snippet": "function isEven(n) {\n  if (n % 2 = 0) {\n    return true;\n  }\n  return false;\n}",
+      "language": "javascript",
+      "prompt_version": "v1"
+    },
+    "ground_truth": {
+      "expected_output": "Syntax error: n % 2 = 0 uses the assignment operator (=) instead of the equality operator (==). This is a syntax error in JavaScript and will prevent the script from running. It should be n % 2 === 0.",
+      "notes": "Assignment vs equality operator — syntax error"
+    },
+    "rag_context": null
+  },
+  {
+    "id": "bug-007",
+    "task_type": "bug_identification",
+    "input": {
+      "code_snippet": "function divide(a, b) {\n  return a / b;\n}\n\nconsole.log(divide(10, 0));",
+      "language": "javascript",
+      "prompt_version": "v1"
+    },
+    "ground_truth": {
+      "expected_output": "No runtime exception is thrown (JavaScript returns Infinity for division by zero), but the function has a logic bug: it does not guard against division by zero. The result Infinity will silently propagate and cause incorrect behavior downstream. A guard clause should check if b === 0 before dividing.",
+      "notes": "Missing null/zero guard — silent incorrect result"
+    },
+    "rag_context": "JavaScript handles division by zero differently from most languages: 10 / 0 evaluates to Infinity and 0 / 0 evaluates to NaN. Neither throws an exception. Both values propagate silently through arithmetic operations, making them easy to miss without explicit guards."
+  },
+  {
+    "id": "bug-008",
+    "task_type": "bug_identification",
+    "input": {
+      "code_snippet": "def process(data):\n    result = data['value'] * 2\n    return result\n\nprocess(None)",
+      "language": "python",
+      "prompt_version": "v1"
+    },
+    "ground_truth": {
+      "expected_output": "Null reference error: calling process(None) causes data['value'] to raise a TypeError because NoneType is not subscriptable. The function must guard against None input before accessing keys, e.g. with an early return or an isinstance check.",
+      "notes": "Null reference — no None guard before key access"
+    },
+    "rag_context": "In Python, attempting to subscript None (e.g. None['key']) raises TypeError: 'NoneType' object is not subscriptable. This is Python's equivalent of a null reference error. Defensive code should check for None before accessing attributes or keys on values that may be absent."
+  },
+  {
+    "id": "explain-001",
+    "task_type": "code_explanation",
+    "input": {
+      "code_snippet": "def flatten(lst):\n    result = []\n    for item in lst:\n        if isinstance(item, list):\n            result.extend(flatten(item))\n        else:\n            result.append(item)\n    return result",
+      "language": "python",
+      "prompt_version": "v1"
+    },
+    "ground_truth": {
+      "expected_output": "This function recursively flattens a nested list of arbitrary depth into a single flat list. For each element: if it is a list, it recursively flattens it and extends the result; if it is not a list, it appends it directly. The base case is any non-list element.",
+      "notes": "Recursive list flattening — variable depth"
+    },
+    "rag_context": null
+  },
+  {
+    "id": "explain-002",
+    "task_type": "code_explanation",
+    "input": {
+      "code_snippet": "async function fetchUserData(userId) {\n  try {\n    const response = await fetch(`/api/users/${userId}`);\n    if (!response.ok) {\n      throw new Error(`HTTP error: ${response.status}`);\n    }\n    const data = await response.json();\n    return data;\n  } catch (err) {\n    console.error('Failed to fetch user:', err);\n    return null;\n  }\n}",
+      "language": "javascript",
+      "prompt_version": "v1"
+    },
+    "ground_truth": {
+      "expected_output": "This async function fetches user data from a REST API by userId. It awaits the fetch call, checks that the response status is OK (2xx), then awaits JSON parsing of the body. If the request fails or the status is not OK, it catches the error, logs it, and returns null instead of throwing.",
+      "notes": "Async/await with fetch — error handling pattern"
+    },
+    "rag_context": null
+  },
+  {
+    "id": "explain-003",
+    "task_type": "code_explanation",
+    "input": {
+      "code_snippet": "const pipe = (...fns) => (x) => fns.reduce((v, f) => f(v), x);",
+      "language": "javascript",
+      "prompt_version": "v1"
+    },
+    "ground_truth": {
+      "expected_output": "This is a higher-order function that implements function composition (left-to-right pipeline). It accepts any number of functions, returns a new function that takes an initial value x, and passes x through each function in sequence — the output of each function becomes the input of the next. This is the functional programming 'pipe' pattern.",
+      "notes": "Higher-order function — pipe/compose pattern using reduce"
+    },
+    "rag_context": null
+  },
+  {
+    "id": "explain-004",
+    "task_type": "code_explanation",
+    "input": {
+      "code_snippet": "class BankAccount:\n    def __init__(self, owner, balance=0):\n        self.owner = owner\n        self.__balance = balance\n\n    def deposit(self, amount):\n        if amount > 0:\n            self.__balance += amount\n\n    def withdraw(self, amount):\n        if 0 < amount <= self.__balance:\n            self.__balance -= amount\n\n    def get_balance(self):\n        return self.__balance",
+      "language": "python",
+      "prompt_version": "v1"
+    },
+    "ground_truth": {
+      "expected_output": "This class models a bank account with encapsulation. The balance is stored with a double-underscore prefix (__balance), which triggers Python's name mangling — renaming it to _BankAccount__balance internally. This makes direct access non-obvious but does not truly prevent it; Python has no enforced private attributes. deposit() adds funds only if the amount is positive. withdraw() subtracts funds only if the amount is positive and does not exceed the current balance. get_balance() exposes the balance as a read-only accessor.",
+      "notes": "OOP encapsulation — private attributes and accessor pattern"
+    },
+    "rag_context": null
+  },
+  {
+    "id": "explain-005",
+    "task_type": "code_explanation",
+    "input": {
+      "code_snippet": "def memoize(fn):\n    cache = {}\n    def wrapper(*args):\n        if args not in cache:\n            cache[args] = fn(*args)\n        return cache[args]\n    return wrapper",
+      "language": "python",
+      "prompt_version": "v1"
+    },
+    "ground_truth": {
+      "expected_output": "This is a memoization decorator. It wraps a function and caches its return values keyed by the input arguments. On first call with a given set of arguments, it calls the original function and stores the result. On subsequent calls with the same arguments, it returns the cached result without re-executing the function. This is a standard performance optimization for pure functions with expensive computation.",
+      "notes": "Higher-order function — memoization decorator"
+    },
+    "rag_context": "Memoization is an optimization technique that caches the results of function calls based on their inputs. In Python, the functools.lru_cache decorator provides built-in memoization with a configurable cache size limit. Manual memoization using a dictionary is equivalent but lacks cache eviction."
+  },
+  {
+    "id": "explain-006",
+    "task_type": "code_explanation",
+    "input": {
+      "code_snippet": "async function* streamLines(url) {\n  const response = await fetch(url);\n  const reader = response.body.getReader();\n  const decoder = new TextDecoder();\n  let buffer = '';\n  while (true) {\n    const { done, value } = await reader.read();\n    if (done) break;\n    buffer += decoder.decode(value, { stream: true });\n    const lines = buffer.split('\\n');\n    buffer = lines.pop();\n    for (const line of lines) yield line;\n  }\n  if (buffer) yield buffer;\n}",
+      "language": "javascript",
+      "prompt_version": "v1"
+    },
+    "ground_truth": {
+      "expected_output": "This is an async generator that streams a remote resource line by line without buffering the full response. It fetches the URL, reads the response body incrementally using a ReadableStream reader, decodes each chunk, and splits on newlines. Incomplete lines are held in a buffer until the next chunk arrives. Each complete line is yielded as it becomes available. The final buffer flush handles the last line if it lacks a trailing newline.",
+      "notes": "Async generator — streaming HTTP response line by line"
+    },
+    "rag_context": null
+  },
+  {
+    "id": "explain-007",
+    "task_type": "code_explanation",
+    "input": {
+      "code_snippet": "def binary_search(arr, target):\n    low, high = 0, len(arr) - 1\n    while low <= high:\n        mid = (low + high) // 2\n        if arr[mid] == target:\n            return mid\n        elif arr[mid] < target:\n            low = mid + 1\n        else:\n            high = mid - 1\n    return -1",
+      "language": "python",
+      "prompt_version": "v1"
+    },
+    "ground_truth": {
+      "expected_output": "This function implements binary search on a sorted array. It maintains low and high pointers that bound the search space. Each iteration computes the midpoint and compares the element at that index to the target. If equal, it returns the index. If the target is larger, it discards the left half by moving low up. If smaller, it discards the right half by moving high down. If the bounds cross without finding the target, it returns -1. Time complexity is O(log n).",
+      "notes": "Binary search — iterative implementation"
+    },
+    "rag_context": null
+  },
+  {
+    "id": "explain-008",
+    "task_type": "code_explanation",
+    "input": {
+      "code_snippet": "class EventEmitter:\n    def __init__(self):\n        self._listeners = {}\n\n    def on(self, event, callback):\n        self._listeners.setdefault(event, []).append(callback)\n\n    def emit(self, event, *args, **kwargs):\n        for cb in self._listeners.get(event, []):\n            cb(*args, **kwargs)\n\n    def off(self, event, callback):\n        if event in self._listeners:\n            self._listeners[event] = [\n                cb for cb in self._listeners[event] if cb != callback\n            ]",
+      "language": "python",
+      "prompt_version": "v1"
+    },
+    "ground_truth": {
+      "expected_output": "This class implements the observer/event emitter pattern. on() registers a callback for a named event, using setdefault to initialize the listener list if needed. emit() fires all registered callbacks for an event, passing through any positional or keyword arguments. off() removes a specific callback from an event's listener list using a list comprehension filter.",
+      "notes": "OOP — observer/event emitter pattern"
+    },
+    "rag_context": "The observer pattern (also called event emitter or pub/sub) decouples event producers from consumers. In Node.js, EventEmitter is a built-in class in the 'events' module. Python has no built-in equivalent, so it is typically implemented manually or via libraries like PyDispatcher or blinker."
+  },
+  {
+    "id": "review-001",
+    "task_type": "code_review",
+    "input": {
+      "code_snippet": "def d(x, y, z):\n    a = x * 2\n    b = y + z\n    c = a - b\n    return c",
+      "language": "python",
+      "prompt_version": "v1"
+    },
+    "ground_truth": {
+      "expected_output": "The function and all variable names are single letters with no semantic meaning. It is impossible to understand what this function computes or what its inputs represent without external context. All identifiers should be renamed to reflect their purpose. The intermediate variables a, b, c add no clarity and could be collapsed into a single return statement.",
+      "notes": "Poor naming — completely opaque function"
+    },
+    "rag_context": null
+  },
+  {
+    "id": "review-002",
+    "task_type": "code_review",
+    "input": {
+      "code_snippet": "def read_file(path):\n    f = open(path)\n    content = f.read()\n    f.close()\n    return content",
+      "language": "python",
+      "prompt_version": "v1"
+    },
+    "ground_truth": {
+      "expected_output": "Missing error handling: if open() or f.read() raises an exception, f.close() is never called, leaking the file handle. The correct pattern is to use a context manager (with open(path) as f:) which guarantees the file is closed even if an exception occurs. Additionally, there is no handling for FileNotFoundError or PermissionError.",
+      "notes": "Missing error handling — file handle leak on exception"
+    },
+    "rag_context": null
+  },
+  {
+    "id": "review-003",
+    "task_type": "code_review",
+    "input": {
+      "code_snippet": "def get_even_squares(limit):\n    result = []\n    for i in range(limit):\n        if i % 2 == 0:\n            result.append(i * i)\n    return result",
+      "language": "python",
+      "prompt_version": "v1"
+    },
+    "ground_truth": {
+      "expected_output": "The logic is correct but the implementation is inefficient and verbose. This can be replaced with a list comprehension: [i * i for i in range(limit) if i % 2 == 0]. Additionally, range can be seeded to skip odd numbers entirely: [i * i for i in range(0, limit, 2)], which halves the iterations.",
+      "notes": "Inefficient loop — can be replaced with a more efficient list comprehension"
+    },
+    "rag_context": null
+  },
+  {
+    "id": "review-004",
+    "task_type": "code_review",
+    "input": {
+      "code_snippet": "def handle_user(user_id):\n    user = db.get_user(user_id)\n    profile = db.get_profile(user_id)\n    orders = db.get_orders(user_id)\n    payments = db.get_payments(user_id)\n    notifications = db.get_notifications(user_id)\n    report = generate_report(user, profile, orders)\n    send_email(user, report)\n    update_last_seen(user_id)\n    archive_old_orders(orders)\n    return user",
+      "language": "python",
+      "prompt_version": "v1"
+    },
+    "ground_truth": {
+      "expected_output": "This function does too many things: it fetches data, generates a report, sends an email, updates state, and archives records. It violates the single responsibility principle. Each concern should be extracted into its own function. Additionally, there is no error handling — if any db call or send_email fails, the function crashes with no recovery path. The payments and notifications variables are fetched but never used.",
+      "notes": "Function does too many things — SRP violation, unused variables, no error handling"
+    },
+    "rag_context": "The Single Responsibility Principle (SRP) states that a function or class should have only one reason to change. Functions that mix data fetching, computation, I/O, and side effects are harder to test, debug, and reuse. The recommended approach is to decompose them into focused units and compose at a higher level."
+  },
+  {
+    "id": "review-005",
+    "task_type": "code_review",
+    "input": {
+      "code_snippet": "function calculateTotal(items) {\n  let t = 0;\n  for (var i = 0; i < items.length; i++) {\n    t = t + items[i].p * items[i].q;\n  }\n  return t;\n}",
+      "language": "javascript",
+      "prompt_version": "v1"
+    },
+    "ground_truth": {
+      "expected_output": "Variable names t, p, and q are meaningless — they should be total, price, and quantity. The loop uses var instead of let, which has function scope rather than block scope and is considered bad practice in modern JavaScript. The loop can be replaced with a more readable reduce: items.reduce((total, item) => total + item.price * item.quantity, 0).",
+      "notes": "Poor naming, var instead of let, imperative loop replaceable with reduce"
+    },
+    "rag_context": null
+  },
+  {
+    "id": "review-006",
+    "task_type": "code_review",
+    "input": {
+      "code_snippet": "function saveUser(data) {\n  fetch('/api/users', {\n    method: 'POST',\n    body: JSON.stringify(data)\n  });\n}",
+      "language": "javascript",
+      "prompt_version": "v1"
+    },
+    "ground_truth": {
+      "expected_output": "The fetch call is not awaited and its returned Promise is discarded. This means the function returns before the request completes, errors are silently swallowed, and the caller has no way to know if the save succeeded or failed. The function should be async, await the fetch, check response.ok, and either return the result or throw on failure. Missing Content-Type header will also likely cause the server to misparse the body.",
+      "notes": "Unhandled promise, missing await, missing error handling, missing Content-Type header"
+    },
+    "rag_context": null
+  },
+  {
+    "id": "review-007",
+    "task_type": "code_review",
+    "input": {
+      "code_snippet": "def find_user(users, name):\n    for user in users:\n        if user['name'] == name:\n            return user\n    for user in users:\n        if user['name'].lower() == name.lower():\n            return user\n    return None",
+      "language": "python",
+      "prompt_version": "v1"
+    },
+    "ground_truth": {
+      "expected_output": "The function iterates over the full list twice. The first pass does a case-sensitive match; the second does a case-insensitive match. If a case-sensitive match exists, the second loop is wasted work. This can be collapsed into a single pass: first check exact match, fall back to case-insensitive in one loop. Alternatively, if case-insensitive matching is always acceptable, use only the lower() comparison in a single pass.",
+      "notes": "Inefficient double loop — redundant iteration over the same list"
+    },
+    "rag_context": null
+  },
+  {
+    "id": "review-008",
+    "task_type": "code_review",
+    "input": {
+      "code_snippet": "def process_records(records):\n    for record in records:\n        try:\n            result = transform(record)\n            save(result)\n        except:\n            pass",
+      "language": "python",
+      "prompt_version": "v1"
+    },
+    "ground_truth": {
+      "expected_output": "The bare except: pass silently swallows all exceptions including KeyboardInterrupt and SystemExit. This makes failures completely invisible — if transform() or save() fail for every record, the function returns successfully with no output and no indication of what went wrong. At minimum, exceptions should be logged. The except clause should catch specific exception types, not all exceptions.",
+      "notes": "Silent exception swallowing — bare except with pass"
+    },
+    "rag_context": "In Python, a bare except clause catches all exceptions including BaseException subclasses like KeyboardInterrupt and SystemExit. This is almost always a mistake. Best practice is to catch the most specific exception type possible. If broad catching is needed, use except Exception (which excludes BaseException subclasses) and always log the error."
+  },
+  {
+    "id": "security-001",
+    "task_type": "security_flagging",
+    "input": {
+      "code_snippet": "def get_user(username):\n    query = \"SELECT * FROM users WHERE username = '\" + username + \"'\"\n    return db.execute(query)",
+      "language": "python",
+      "prompt_version": "v1"
+    },
+    "ground_truth": {
+      "expected_output": "SQL injection vulnerability: the username value is concatenated directly into the query string without sanitization. An attacker can input a value like ' OR '1'='1 to bypass authentication or ' DROP TABLE users; -- to destroy data. The fix is to use parameterized queries: db.execute('SELECT * FROM users WHERE username = %s', (username,)).",
+      "notes": "SQL injection — string concatenation in query"
+    },
+    "rag_context": null
+  },
+  {
+    "id": "security-002",
+    "task_type": "security_flagging",
+    "input": {
+      "code_snippet": "import anthropic\n\nAPI_KEY = 'sk-ant-api03-abc123def456'\nclient = anthropic.Anthropic(api_key=API_KEY)",
+      "language": "python",
+      "prompt_version": "v1"
+    },
+    "ground_truth": {
+      "expected_output": "Hardcoded secret: the API key is embedded directly in source code. If this file is committed to a version control system (even a private repo), the key is exposed to anyone with repo access and is permanently recorded in git history even if later removed. API keys must be loaded from environment variables or a secrets manager: os.environ['ANTHROPIC_API_KEY'].",
+      "notes": "Hardcoded secret — API key in source"
+    },
+    "rag_context": "Secrets committed to git history persist indefinitely even after deletion from the working tree. Tools like truffleHog, git-secrets, and GitHub's secret scanning automatically detect and alert on committed credentials. The only remediation after a secret is committed is to rotate the key immediately."
+  },
+  {
+    "id": "security-003",
+    "task_type": "security_flagging",
+    "input": {
+      "code_snippet": "from flask import Flask, request\napp = Flask(__name__)\n\n@app.route('/search')\ndef search():\n    query = request.args.get('q')\n    results = db.search(query)\n    return f'<h1>Results for {query}</h1>' + render_results(results)",
+      "language": "python",
+      "prompt_version": "v1"
+    },
+    "ground_truth": {
+      "expected_output": "Cross-site scripting (XSS) vulnerability: the query parameter from the URL is interpolated directly into the HTML response without escaping. An attacker can craft a URL with q=<script>stealCookies()</script> to inject arbitrary JavaScript into the page. The fix is to escape user input before rendering it in HTML, using markupsafe.escape() (from markupsafe import escape — Flask 2.0+ moved Markup out of Flask into this separate package) or by rendering through a Jinja2 template which auto-escapes by default.",
+      "notes": "XSS — unescaped user input in HTML response"
+    },
+    "rag_context": null
+  },
+  {
+    "id": "security-004",
+    "task_type": "security_flagging",
+    "input": {
+      "code_snippet": "from flask import Flask, request, send_file\napp = Flask(__name__)\n\n@app.route('/download')\ndef download():\n    filename = request.args.get('file')\n    return send_file(f'/var/app/uploads/{filename}')",
+      "language": "python",
+      "prompt_version": "v1"
+    },
+    "ground_truth": {
+      "expected_output": "Path traversal vulnerability (CWE-22): the filename parameter is taken directly from user input and concatenated into a file path without validation. An attacker can supply file=../../etc/passwd to read arbitrary files on the server. The fix requires sanitizing the filename and ensuring the resolved path stays within the intended upload directory — acceptable approaches include os.path.basename() to strip directory components, or Path.resolve() with a boundary check. The file's existence should also be validated before serving.",
+      "notes": "Path traversal — unvalidated file path from user input. Accept any correct sanitization approach."
+    },
+    "rag_context": null
+  },
+  {
+    "id": "security-005",
+    "task_type": "security_flagging",
+    "input": {
+      "code_snippet": "app.post('/login', (req, res) => {\n  const { username, password } = req.body;\n  const user = users.find(u => u.username === username && u.password === password);\n  if (user) {\n    res.json({ token: generateToken(user) });\n  } else {\n    res.status(401).json({ error: 'Invalid credentials' });\n  }\n});",
+      "language": "javascript",
+      "prompt_version": "v1"
+    },
+    "ground_truth": {
+      "expected_output": "Passwords are being compared in plaintext, which means they are almost certainly stored in plaintext as well. This is a critical security vulnerability — if the database is compromised, all user passwords are exposed. Passwords must be hashed using a slow algorithm like bcrypt, argon2, or scrypt before storage. The comparison must use the hash library's compare function, never a direct string equality check.",
+      "notes": "Plaintext password comparison — passwords stored and compared without hashing"
+    },
+    "rag_context": null
+  },
+  {
+    "id": "security-006",
+    "task_type": "security_flagging",
+    "input": {
+      "code_snippet": "app.get('/user/:id', (req, res) => {\n  const userId = req.params.id;\n  const user = db.query(`SELECT * FROM users WHERE id = ${userId}`);\n  res.json(user);\n});",
+      "language": "javascript",
+      "prompt_version": "v1"
+    },
+    "ground_truth": {
+      "expected_output": "Two vulnerabilities: (1) SQL injection — userId is interpolated directly into the query string. An attacker can supply an id like 1 OR 1=1 to return all users, or use UNION-based injection to exfiltrate other tables. Use parameterized queries instead. (2) Missing authorization check — any authenticated (or unauthenticated) user can request any user ID and receive that user's data. The endpoint must verify the requesting user is authorized to access the requested resource.",
+      "notes": "SQL injection + missing authorization check (IDOR)"
+    },
+    "rag_context": "Parameterized queries (also called prepared statements) separate SQL code from data, making injection impossible. In Node.js with pg: db.query('SELECT * FROM users WHERE id = $1', [userId]). The OWASP Top 10 lists both SQL Injection (A03) and Broken Access Control (A01) as critical vulnerability classes."
+  },
+  {
+    "id": "security-007",
+    "task_type": "security_flagging",
+    "input": {
+      "code_snippet": "def run_command(user_input):\n    import os\n    os.system('echo ' + user_input)",
+      "language": "python",
+      "prompt_version": "v1"
+    },
+    "ground_truth": {
+      "expected_output": "Command injection vulnerability: user_input is concatenated directly into a shell command. An attacker can supply input like hello; rm -rf / to execute arbitrary shell commands with the privileges of the running process. Never pass user input to os.system(), subprocess with shell=True, or eval(). Use subprocess.run() with a list of arguments and shell=False: subprocess.run(['echo', user_input], shell=False).",
+      "notes": "Command injection — user input concatenated into shell command"
+    },
+    "rag_context": null
+  },
+  {
+    "id": "security-008",
+    "task_type": "security_flagging",
+    "input": {
+      "code_snippet": "def reset_password(user_id, new_password):\n    token = str(user_id) + str(int(time.time()))\n    store_reset_token(user_id, token)\n    send_reset_email(user_id, token)",
+      "language": "python",
+      "prompt_version": "v1"
+    },
+    "ground_truth": {
+      "expected_output": "Insecure token generation: the reset token is constructed from predictable values (user ID and current Unix timestamp), making it trivially guessable by an attacker who knows or can enumerate user IDs and has approximate knowledge of the time. Password reset tokens must be cryptographically random and unpredictable: use secrets.token_urlsafe(32) from Python's secrets module. The token should also be hashed before storage and have a short expiry window.",
+      "notes": "Predictable token generation — not cryptographically random"
+    },
+    "rag_context": null
+  }
+]
