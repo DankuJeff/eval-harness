@@ -2,7 +2,7 @@
 
 A production-grade evaluation harness that tests large language models on code understanding and review tasks. The harness runs structured eval suites across multiple models and prompt versions, tracks all experiment results in Weights & Biases, and surfaces regression data in a React dashboard. Both a CLI and a dashboard Run button serve as entry points to the same underlying runner logic.
 
-Supported task types: bug identification, code explanation, code review, and security issue flagging. Two evaluation modes are available — general LLM mode (prompt in, response evaluated directly) and RAG mode (retrieved code context injected alongside the prompt, evaluated on both retrieval quality and generation quality). Models under test: Claude Haiku, Sonnet, and Opus via the Anthropic API. Scoring uses DeepEval's LLM-as-judge metrics with GPT-4o as the judge model.
+Supported task types: bug identification, code explanation, code review, and security issue flagging. Two evaluation modes are available — general LLM mode (prompt in, response evaluated directly) and RAG mode (retrieved code context injected alongside the prompt, evaluated on both retrieval quality and generation quality). Models under test: Claude Haiku, Sonnet, and Opus via the Anthropic API. Scoring uses DeepEval's LLM-as-judge metrics, run through DeepEval's default OpenAI judge — resolved from `OPENAI_API_KEY` and not pinned in code, so it can change as DeepEval tracks OpenAI releases (this project started on `gpt-4o` and DeepEval auto-upgraded to `gpt-5.4` mid-run).
 
 ---
 
